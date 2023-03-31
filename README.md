@@ -21,6 +21,7 @@ to improve the efficiency of optimization, we do not use automatic derivation or
 * C++14 or C++17 Compiler
 * Eigen 3.3.7
 * OpenCV 3.4.9
+* Boost 1.58.0
 * Cere-solver 1.14.0: [Ceres Installation](http://ceres-solver.org/installation.html), remember to **sudo make install**.
 
 #### 2. Build Project with Cmake
