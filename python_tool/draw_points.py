@@ -1,0 +1,118 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 15 18:18:24 2017
+
+@author: hyj
+"""
+
+import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from GeometryLib import  drawCoordinateFrame, euler2Rbn,euler2Rnb
+import transformations as tf
+
+import os
+#filepath=os.path.abspath('.')  #表示当前所处的文件夹的绝对路径
+filepath=os.path.abspath('..')+"/bin"  #表示当前所处的文件夹上一级文件夹的绝对路径
+
+point_id=[]
+x=[]
+y=[]
+z=[]                                                                                                
+
+with open(filepath + '/all_points.txt', 'r') as f:
+    data = f.readlines()  #txt中所有字符串读入data  
+  
+    for line in data:  
+        odom = line.split()        #将单个数据分隔开存好  
+        numbers_float = list(map(float, odom)) #转化为浮点数  
+        x.append( numbers_float[0] )
+        y.append( numbers_float[1] )
+        z.append( numbers_float[2] )
+
+    
+position = []
+quaterntions = []
+timestamp = []
+qw_index = 1
+with open(filepath + '/cam_pose.txt', 'r') as f:   #   imu_circle   imu_spline
+
+    data = f.readlines()  #txt中所有字符串读入data    
+    for line in data:  
+        odom = line.split()        #将单个数据分隔开存好  
+        numbers_float = list(map(float, odom)) #转化为浮点数  
+
+        #timestamp.append( numbers_float[0])        
+        quaterntions.append( [numbers_float[qw_index], numbers_float[qw_index+1],numbers_float[qw_index+2],numbers_float[qw_index+3]   ] )   # qw,qx,qy,qz
+        position.append( [numbers_float[qw_index+4], numbers_float[qw_index+5],numbers_float[qw_index+6] ] )  
+         
+
+
+## plot 3d        
+fig = plt.figure()
+plt.ion()
+ax = fig.gca(projection='3d')
+
+ax.set_xlabel('X')     
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+rpy = []
+t = []
+for i in range(0,400,5):
+    ax.clear()    
+    # 一次性绘制所有的3D点
+    ax.scatter(x, y, z,c='b')
+    
+    x1=[]
+    y1=[]
+    z1=[]    
+    rpy.append( tf.euler_from_quaternion(quaterntions[i]) )
+    t.append( position[i] )
+    p = position[i]
+    # todo 绘制运动的轨迹坐标
+    # for j in range(len(rpy)):
+    #     drawCoordinateFrame(ax, rpy[j], t[j])  
+    tx = []
+    ty = []
+    tz = []
+    for j in range(len(position)):
+        tx.append(position[j][0])
+        ty.append(position[j][1])
+        tz.append(position[j][2])
+    
+    ax.plot3D(tx, ty, tz)
+    
+    s = filepath + '/keyframe/all_points_' +str(i)+'.txt'
+    with open(s, 'r') as f:   
+        data = f.readlines()  #txt中所有字符串读入data  
+        for line in data:  
+            odom = line.split()        #将单个数据分隔开存好  
+            numbers_float = list(map(float, odom)) #转化为浮点数  
+            x1.append( numbers_float[0] )
+            y1.append( numbers_float[1] )
+            z1.append( numbers_float[2] )
+            
+            ax.plot( [ numbers_float[0],   p[0]  ] , [ numbers_float[1], p[1] ] , zs=[ numbers_float[2], p[2] ] )
+
+    # 绘制算出来的轨迹
+    s = filepath + '/house_model/house.txt'
+    s = filepath + '/cam_pose.txt'
+    with open(s, 'r') as f:
+        data = f.readlines()  # txt中所有字符串读入data
+        for line in data:
+            odom = line.split()  # 将单个数据分隔开存好
+            numbers_float = list(map(float, odom))  # 转化为浮点数
+            ax.plot([numbers_float[0], numbers_float[3]], [numbers_float[1], numbers_float[4]],'b' ,zs=[numbers_float[2], numbers_float[5]])
+        
+    ax.scatter(x1, y1, z1,c='r',marker='^')
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    ax.set_xlim(-15, 20)
+    ax.set_ylim(-15, 20)
+    ax.set_zlim(0, 20)
+    ax.legend()
+    plt.show() 
+    plt.pause(0.01)
+    

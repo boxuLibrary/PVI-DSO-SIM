@@ -1,0 +1,66 @@
+%YAML:1.0
+
+#------------------------------------------------
+# Camera Parameters. Adjust them!
+#-------------------------------------------------
+Camera.fx: 460.
+Camera.fy: 460.
+Camera.cx: 320.
+Camera.cy: 240.
+
+Camera.k1: 0.
+Camera.k2: 0.
+Camera.p1: 0.
+Camera.p2: 0.
+Camera.k3: 0.
+
+# Camera resolution
+Camera.width: 640
+Camera.height: 480
+
+# Camera frames per second
+Camera.fps: 10
+IMU.Frequency: 200
+
+# Transformation from camera to body-frame (imu)
+Tbc: !!opencv-matrix
+  rows: 4
+  cols: 4
+  dt: f
+  data: [0.0, 0.0, 1.0,0.0,
+         1.0,0.0, 0.0, 0.0,
+         0.0, 1.0, 0.0, 0.0,
+         0.0, 0.0, 0.0, 1.0]
+#------------------------------------------------
+# Noise Parameters. Adjust them!
+#-------------------------------------------------
+# IMU noise
+IMU.NoiseGyro: 0.00015 #0.0008
+IMU.NoiseAcc: 0.00019 #0.0008
+IMU.GyroWalk: 1e-5
+IMU.AccWalk: 1e-5 #5e-04
+
+# Bias init
+IMU.GyroBiasInit: 0.0
+IMU.AccBiasInit: 0.0
+
+# Camera features noise
+Camera.PixelNoise: 1.0
+
+# flag for add noise
+Camera.NoiseFlag: 1
+IMU.NoiseFlag: 0
+
+#------------------------------------------------
+# Virtual Data Parameters. Adjust them!
+#-------------------------------------------------
+# map points
+nFeatures: 250
+# sim time, seconds
+Times: 40.
+# constraints type
+# 0: wall
+# 1: ground
+Constraint.type: 0
+
+optimization_num: 10
